@@ -1,0 +1,11 @@
+usleep : suspend l'exécution du programme appelant durant (au moins) x microsecondes
+
+gettimeofday : lire l'heure actuelle
+
+pthread_create : Créer un nouveau thread 
+
+pthread_detach() : place le thread th dans l'état détaché.
+Cela garantit que les ressources mémoire consommées par th seront immédiatement libérées lorsque l'exécution de th s'achèvera.
+Cependant, cela empêche les autres threads de se synchroniser sur la mort de th en utilisant pthread_join
+
+pthread_join : Attendre la fin d'un autre thread
