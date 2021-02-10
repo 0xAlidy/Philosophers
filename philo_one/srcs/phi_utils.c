@@ -6,11 +6,36 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/03 14:37:48 by alidy             #+#    #+#             */
-/*   Updated: 2021/02/04 10:07:51 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/02/10 12:51:49 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philosophers.h"
+
+long long 	ft_time(struct timeval *s)
+{
+	long long sec;
+	long long micro;
+	long long time;
+
+	sec = s->tv_sec;
+	micro = s->tv_usec;
+	time = sec * 0.001 + micro * 1000;
+	return (time);
+}
+
+long long 	ft_timersub(struct timeval *s, t_ph *ph)
+{
+	struct timeval end;
+	long long time;
+	long long time2;
+	
+	gettimeofday(&end, NULL);
+	time = ft_time(s);
+	time2 = ft_time(&end);
+	ph->time += time2;
+	return (time - time2);
+}
 
 int		ft_strlen(char *str)
 {
@@ -20,11 +45,6 @@ int		ft_strlen(char *str)
 	while (str[i])
 		++i;
 	return (i);
-}
-
-void	ft_write(char *str)
-{
-	write(1, str, ft_strlen(str));
 }
 
 int		ft_atoi(const char *str)
