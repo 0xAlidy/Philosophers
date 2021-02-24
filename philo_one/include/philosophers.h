@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/30 17:45:44 by alidy             #+#    #+#             */
-/*   Updated: 2021/02/10 12:54:04 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/02/24 09:03:22 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,13 @@
 # define FORK 4
 # define DIED 5
 
-typedef struct		s_philo 
+typedef struct		s_philo
 {
-	int				id;		
+	int				id;
 	int				nb_eat;
 	int				state;
 	struct timeval	last_eat;
 }					t_philo;
-
 
 typedef struct		s_ph
 {
@@ -42,14 +41,29 @@ typedef struct		s_ph
 	int				must_eat;
 	int				is_dead;
 	int				current;
-	pthread_mutex_t	*forks;
+	int				*forks;
+	pthread_mutex_t	m_fork;
 	pthread_mutex_t speak;
 	pthread_mutex_t dead;
-	long long		time;
+	pthread_mutex_t id;
+	long			time;
 }					t_ph;
 
+int					test_args(int argc, char **argv);
+int					init_mutex(t_ph *ph);
+int					init_ph(t_ph *ph, int argc, char **argv);
+void				free_ph(t_ph *ph);
 int					ft_atoi(const char *str);
 int					ft_strlen(char *str);
-long long 			ft_timersub(struct timeval *s, t_ph *ph);
+long				ft_timersub(struct timeval *s);
+long				ft_time(struct timeval *s);
+long				ft_timer(long time);
+long				ft_have_time(struct timeval *s, int time);
+int					phi_is_dead(t_ph *ph);
+void				print_state(t_ph *ph, int id, int state);
+t_philo				init_philo(t_ph *ph);
+int					fork_id(int nb, int id);
+void				phi_my_sleep(int time);
+void				phi_sleep(t_ph	*ph, t_philo *philo);
 
 #endif

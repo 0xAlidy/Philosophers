@@ -6,7 +6,7 @@
 #    By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/01/30 17:41:29 by alidy             #+#    #+#              #
-#    Updated: 2021/02/03 14:39:16 by alidy            ###   ########lyon.fr    #
+#    Updated: 2021/02/24 08:54:34 by alidy            ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,6 +16,9 @@ SRC_PATH		=		srcs
 
 SRCS_NAME		=		philosophers.c 				\
 						phi_utils.c 				\
+						phi_tools.c 				\
+						phi_times.c					\
+						phi_init.c					\
 						
 OBJS			=		${SRCS:.c=.o}
 

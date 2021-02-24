@@ -5,70 +5,77 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/02/03 14:37:48 by alidy             #+#    #+#             */
-/*   Updated: 2021/02/10 12:51:49 by alidy            ###   ########lyon.fr   */
+/*   Created: 2021/02/24 08:35:30 by alidy             #+#    #+#             */
+/*   Updated: 2021/02/24 08:59:54 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philosophers.h"
 
-long long 	ft_time(struct timeval *s)
+void	print_state(t_ph *ph, int id, int state)
 {
-	long long sec;
-	long long micro;
-	long long time;
-
-	sec = s->tv_sec;
-	micro = s->tv_usec;
-	time = sec * 0.001 + micro * 1000;
-	return (time);
+	pthread_mutex_lock(&(ph->speak));
+	if (phi_is_dead(ph) == 1)
+	{
+		pthread_mutex_unlock(&(ph->speak));
+		return ;
+	}
+	if (state == EATING)
+		printf("%-5ld %d is eating\n", ft_timer(ph->time), id);
+	else if (state == SLEEPING)
+		printf("%-5ld %d is sleeping\n", ft_timer(ph->time), id);
+	else if (state == THINKING)
+		printf("%-5ld %d is thinking\n", ft_timer(ph->time), id);
+	else if (state == FORK)
+		printf("%-5ld %d has taken a fork\n", ft_timer(ph->time), id);
+	else if (state == DIED)
+	{
+		ph->is_dead = 1;
+		printf("%-5ld %d died\n", ft_timer(ph->time), id);
+	}
+	pthread_mutex_unlock(&(ph->speak));
 }
 
-long long 	ft_timersub(struct timeval *s, t_ph *ph)
+t_philo	init_philo(t_ph *ph)
 {
-	struct timeval end;
-	long long time;
-	long long time2;
-	
-	gettimeofday(&end, NULL);
-	time = ft_time(s);
-	time2 = ft_time(&end);
-	ph->time += time2;
-	return (time - time2);
+	t_philo philo;
+
+	philo.id = ph->current + 1;
+	pthread_mutex_unlock(&(ph->id));
+	philo.nb_eat = 0;
+	philo.state = EATING;
+	gettimeofday(&(philo.last_eat), NULL);
+	return (philo);
 }
 
-int		ft_strlen(char *str)
+int		fork_id(int nb, int id)
 {
-	int i;
+	int res;
 
-	i = 0;
-	while (str[i])
-		++i;
-	return (i);
+	if (id == 1)
+		res = nb - 1;
+	else
+		res = id - 2;
+	return (res);
 }
 
-int		ft_atoi(const char *str)
+int		phi_is_dead(t_ph *ph)
 {
-	int		i;
-	int		neg;
-	long	res;
+	int res;
 
-	i = 0;
-	neg = 1;
 	res = 0;
-	while ((str[i] > 8 && str[i] < 14) || str[i] == 32)
-		i++;
-	if (str[i] == '+')
-		i++;
-	else if (str[i] == '-')
-	{
-		i++;
-		neg = -1;
-	}
-	while (str[i] >= '0' && str[i] <= '9')
-	{
-		res = res * 10 + str[i] - 48;
-		i++;
-	}
-	return (res * neg);
+	pthread_mutex_lock(&(ph->dead));
+	if (ph->is_dead == 1)
+		res = 1;
+	pthread_mutex_unlock(&(ph->dead));
+	return (res);
+}
+
+void	free_ph(t_ph *ph)
+{
+	pthread_mutex_destroy(&(ph->id));
+	pthread_mutex_destroy(&(ph->dead));
+	pthread_mutex_destroy(&(ph->speak));
+	pthread_mutex_destroy(&(ph->m_fork));
+	free(ph->forks);
 }
