@@ -9,3 +9,7 @@ Cela garantit que les ressources mémoire consommées par th seront immédiateme
 Cependant, cela empêche les autres threads de se synchroniser sur la mort de th en utilisant pthread_join
 
 pthread_join : Attendre la fin d'un autre thread
+
+
+unlike avant de Créer
+"/tset", O_CREAT | O_EXCL, S_IRWXG, 1

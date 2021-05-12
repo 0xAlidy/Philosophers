@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/30 17:45:44 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/12 13:58:19 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/12 13:52:37 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,14 @@
 # include <unistd.h>
 # include <sys/time.h>
 # include <pthread.h>
+# include <semaphore.h>
 # define EATING 1
 # define SLEEPING 2
 # define THINKING 3
 # define FORK 4
 # define DIED 5
 
-typedef struct s_philo
+typedef struct		s_philo
 {
 	int				id;
 	int				nb_eat;
@@ -32,7 +33,7 @@ typedef struct s_philo
 	struct timeval	last_eat;
 }					t_philo;
 
-typedef struct s_ph
+typedef struct		s_ph
 {
 	int				nb;
 	int				t_sleep;
@@ -41,16 +42,15 @@ typedef struct s_ph
 	int				must_eat;
 	int				is_dead;
 	int				current;
-	int				*forks;
-	pthread_mutex_t	m_fork;
-	pthread_mutex_t	speak;
-	pthread_mutex_t	dead;
-	pthread_mutex_t	id;
+	sem_t			fork;
+	sem_t 			speak;
+	sem_t 			dead;
+	sem_t			id;
 	long			time;
 }					t_ph;
 
 int					test_args(int argc, char **argv);
-int					init_mutex(t_ph *ph);
+int					init_sem(t_ph *ph);
 int					init_ph(t_ph *ph, int argc, char **argv);
 void				free_ph(t_ph *ph);
 int					ft_atoi(const char *str);

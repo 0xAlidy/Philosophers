@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/24 08:35:30 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/12 14:03:04 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/02/24 08:59:54 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	print_state(t_ph *ph, int id, int state)
 
 t_philo	init_philo(t_ph *ph)
 {
-	t_philo	philo;
+	t_philo philo;
 
 	philo.id = ph->current + 1;
 	pthread_mutex_unlock(&(ph->id));
@@ -48,9 +48,9 @@ t_philo	init_philo(t_ph *ph)
 	return (philo);
 }
 
-int	fork_id(int nb, int id)
+int		fork_id(int nb, int id)
 {
-	int	res;
+	int res;
 
 	if (id == 1)
 		res = nb - 1;
@@ -59,9 +59,9 @@ int	fork_id(int nb, int id)
 	return (res);
 }
 
-int	phi_is_dead(t_ph *ph)
+int		phi_is_dead(t_ph *ph)
 {
-	int	res;
+	int res;
 
 	res = 0;
 	pthread_mutex_lock(&(ph->dead));
