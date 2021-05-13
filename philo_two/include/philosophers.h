@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/30 17:45:44 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/12 13:52:37 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/13 09:47:38 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 # define FORK 4
 # define DIED 5
 
-typedef struct		s_philo
+typedef struct s_philo
 {
 	int				id;
 	int				nb_eat;
@@ -33,7 +33,7 @@ typedef struct		s_philo
 	struct timeval	last_eat;
 }					t_philo;
 
-typedef struct		s_ph
+typedef struct s_ph
 {
 	int				nb;
 	int				t_sleep;
@@ -42,10 +42,10 @@ typedef struct		s_ph
 	int				must_eat;
 	int				is_dead;
 	int				current;
-	sem_t			fork;
-	sem_t 			speak;
-	sem_t 			dead;
-	sem_t			id;
+	sem_t			*fork;
+	sem_t			*speak;
+	sem_t			*dead;
+	sem_t			*id;
 	long			time;
 }					t_ph;
 
@@ -62,7 +62,6 @@ long				ft_have_time(struct timeval *s, int time);
 int					phi_is_dead(t_ph *ph);
 void				print_state(t_ph *ph, int id, int state);
 t_philo				init_philo(t_ph *ph);
-int					fork_id(int nb, int id);
 void				phi_my_sleep(int time);
 void				phi_sleep(t_ph	*ph, t_philo *philo);
 

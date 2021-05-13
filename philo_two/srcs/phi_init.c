@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/24 08:32:42 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/12 13:55:25 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/13 09:46:44 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 int	test_args(int argc, char **argv)
 {
-	int i;
-	int y;
+	int	i;
+	int	y;
 
 	i = 1;
 	y = 0;
@@ -47,10 +47,10 @@ int	init_sem(t_ph *ph)
 	sem_unlink("/speak");
 	sem_unlink("/id");
 	sem_unlink("/fork");
-	ph->dead = sem_open("/dead", O_CREAT | O_EXCL, S_IRWXG, 1);
-	ph->speak = sem_open("/speak", O_CREAT | O_EXCL, S_IRWXG, 1);
-	ph->id = sem_open("/id", O_CREAT | O_EXCL, S_IRWXG, 1);
-	ph->fork = sem_open("/fork", O_CREAT | O_EXCL, S_IRWXG, ph->nb);
+	ph->dead = sem_open("/dead", O_CREAT | O_EXCL, S_IRWXU, 1);
+	ph->speak = sem_open("/speak", O_CREAT | O_EXCL, S_IRWXU, 1);
+	ph->id = sem_open("/id", O_CREAT | O_EXCL, S_IRWXU, 1);
+	ph->fork = sem_open("/fork", O_CREAT | O_EXCL, S_IRWXU, ph->nb);
 	return (1);
 }
 

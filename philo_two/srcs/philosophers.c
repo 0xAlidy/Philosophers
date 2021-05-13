@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/03 13:44:52 by alidy             #+#    #+#             */
-/*   Updated: 2021/02/24 09:15:16 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/13 09:48:16 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,25 +30,17 @@ void	phi_sleep(t_ph *ph, t_philo *philo)
 
 void	phi_eat(t_ph *ph, t_philo *philo)
 {
-	pthread_mutex_lock(&(ph->m_fork));
-	if (!ph->forks[philo->id - 1] && !ph->forks[fork_id(ph->nb, philo->id)]
-	&& ph->nb != 1)
-	{
-		ph->forks[philo->id - 1] = 1;
-		ph->forks[fork_id(ph->nb, philo->id)] = 1;
-		pthread_mutex_unlock(&(ph->m_fork));
-		print_state(ph, philo->id, FORK);
-		print_state(ph, philo->id, FORK);
-		philo->nb_eat += 1;
-		print_state(ph, philo->id, EATING);
-		gettimeofday(&(philo->last_eat), NULL);
-		phi_my_sleep(ph->t_eat);
-		philo->state = SLEEPING;
-		pthread_mutex_lock(&(ph->m_fork));
-		ph->forks[philo->id - 1] = 0;
-		ph->forks[fork_id(ph->nb, philo->id)] = 0;
-	}
-	pthread_mutex_unlock(&(ph->m_fork));
+	sem_wait(ph->fork);
+	sem_wait(ph->fork);
+	print_state(ph, philo->id, FORK);
+	print_state(ph, philo->id, FORK);
+	print_state(ph, philo->id, EATING);
+	gettimeofday(&(philo->last_eat), NULL);
+	phi_my_sleep(ph->t_eat);
+	sem_post(ph->fork);
+	sem_post(ph->fork);
+	philo->nb_eat += 1;
+	philo->state = SLEEPING;
 }
 
 void	*start_routine(void *p)
@@ -59,7 +51,7 @@ void	*start_routine(void *p)
 	ph = p;
 	philo = init_philo(ph);
 	while (!phi_is_dead(ph) && (ph->must_eat == -1
-	|| philo.nb_eat < ph->must_eat))
+			|| philo.nb_eat < ph->must_eat))
 	{
 		usleep(10);
 		if (ph->t_die < ft_timersub(&(philo.last_eat)))
@@ -82,15 +74,18 @@ void	*start_routine(void *p)
 void	philosophers(t_ph *ph)
 {
 	int				i;
-	pthread_t		thread_id[ph->nb];
+	pthread_t		*thread_id;
 	struct timeval	temp;
 
 	i = 0;
 	gettimeofday(&temp, NULL);
 	ph->time = ft_time(&temp);
+	thread_id = malloc(sizeof(pthread_t) * ph->nb);
+	if (!thread_id)
+		return ;
 	while (i < ph->nb)
 	{
-		pthread_mutex_lock(&(ph->id));
+		sem_wait(ph->id);
 		ph->current = i;
 		if (pthread_create(&thread_id[i], NULL, start_routine, ph))
 			return ;
@@ -102,11 +97,12 @@ void	philosophers(t_ph *ph)
 		pthread_join(thread_id[i], NULL);
 		++i;
 	}
+	free(thread_id);
 }
 
-int		main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
-	t_ph ph;
+	t_ph	ph;
 
 	if (init_ph(&ph, argc, argv))
 	{

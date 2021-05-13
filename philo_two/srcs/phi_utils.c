@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/24 08:35:30 by alidy             #+#    #+#             */
-/*   Updated: 2021/02/24 08:59:54 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/13 09:47:57 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 
 void	print_state(t_ph *ph, int id, int state)
 {
-	pthread_mutex_lock(&(ph->speak));
+	sem_wait(ph->speak);
 	if (phi_is_dead(ph) == 1)
 	{
-		pthread_mutex_unlock(&(ph->speak));
+		sem_post(ph->speak);
 		return ;
 	}
 	if (state == EATING)
@@ -33,49 +33,39 @@ void	print_state(t_ph *ph, int id, int state)
 		ph->is_dead = 1;
 		printf("%-5ld %d died\n", ft_timer(ph->time), id);
 	}
-	pthread_mutex_unlock(&(ph->speak));
+	sem_post(ph->speak);
 }
 
 t_philo	init_philo(t_ph *ph)
 {
-	t_philo philo;
+	t_philo	philo;
 
 	philo.id = ph->current + 1;
-	pthread_mutex_unlock(&(ph->id));
+	sem_post(ph->id);
 	philo.nb_eat = 0;
 	philo.state = EATING;
 	gettimeofday(&(philo.last_eat), NULL);
+	if (ph->nb == 1)
+		phi_my_sleep(ph->t_die + 1);
 	return (philo);
 }
 
-int		fork_id(int nb, int id)
+int	phi_is_dead(t_ph *ph)
 {
-	int res;
-
-	if (id == 1)
-		res = nb - 1;
-	else
-		res = id - 2;
-	return (res);
-}
-
-int		phi_is_dead(t_ph *ph)
-{
-	int res;
+	int	res;
 
 	res = 0;
-	pthread_mutex_lock(&(ph->dead));
+	sem_wait(ph->dead);
 	if (ph->is_dead == 1)
 		res = 1;
-	pthread_mutex_unlock(&(ph->dead));
+	sem_post(ph->dead);
 	return (res);
 }
 
 void	free_ph(t_ph *ph)
 {
-	pthread_mutex_destroy(&(ph->id));
-	pthread_mutex_destroy(&(ph->dead));
-	pthread_mutex_destroy(&(ph->speak));
-	pthread_mutex_destroy(&(ph->m_fork));
-	free(ph->forks);
+	sem_close(ph->id);
+	sem_close(ph->dead);
+	sem_close(ph->speak);
+	sem_close(ph->fork);
 }
