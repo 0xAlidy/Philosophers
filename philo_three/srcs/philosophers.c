@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/03 13:44:52 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/18 09:51:28 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/18 14:29:07 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,15 +88,24 @@ void	philosophers(t_ph *ph)
 	i = 0;
 	gettimeofday(&temp, NULL);
 	ph->time = ft_time(&temp);
-	thread_id = malloc(sizeof(pthread_t) * ph->nb);
-	if (!thread_id)
-		return ;
 	while (i < ph->nb)
 	{
 		sem_wait(ph->id);
 		ph->current = i;
-		if (pthread_create(&thread_id[i], NULL, start_routine, ph))
-			return ;
+		id_t	pid;
+		int		*status;
+		if ((pid = fork()) == -1)
+			exit(1);
+		else if (pid == 0)
+		{
+			start_routine();
+			exit(0);
+		}
+		else
+		{
+			waitpid(-1, status, 0);
+			kill(0, SIGKILL);
+		}
 		++i;
 	}
 	i = 0;
