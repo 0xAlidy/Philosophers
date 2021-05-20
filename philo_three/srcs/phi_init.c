@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/24 08:32:42 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/18 09:47:36 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/20 10:43:28 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,12 +43,14 @@ int	test_args(int argc, char **argv)
 
 int	init_sem(t_ph *ph)
 {
+	sem_unlink("/is_dead");
 	sem_unlink("/dead");
 	sem_unlink("/speak");
 	sem_unlink("/id");
 	sem_unlink("/fork");
 	sem_unlink("/check");
 	ph->dead = sem_open("/dead", O_CREAT | O_EXCL, S_IRWXU, 1);
+	ph->is_dead = sem_open("/is_dead", O_CREAT | O_EXCL, S_IRWXU, 1);
 	ph->speak = sem_open("/speak", O_CREAT | O_EXCL, S_IRWXU, 1);
 	ph->id = sem_open("/id", O_CREAT | O_EXCL, S_IRWXU, 1);
 	ph->fork = sem_open("/fork", O_CREAT | O_EXCL, S_IRWXU, ph->nb);
@@ -73,7 +75,6 @@ int	init_ph(t_ph *ph, int argc, char **argv)
 	ph->t_eat = ft_atoi(argv[3]);
 	ph->t_sleep = ft_atoi(argv[4]);
 	ph->nb_fork = ph->nb;
-	ph->is_dead = 0;
 	if (!init_sem(ph))
 		return (0);
 	return (1);

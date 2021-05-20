@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/24 08:35:30 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/18 09:49:18 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/20 11:07:44 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,10 @@ void	print_state(t_ph *ph, int id, int state)
 		printf("%-5ld %d has taken a fork\n", ft_timer(ph->time), id);
 	else if (state == DIED)
 	{
-		ph->is_dead = 1;
 		printf("%-5ld %d died\n", ft_timer(ph->time), id);
+		sem_wait(ph->is_dead);
+		*(ph->dead) = -1;
+		sem_post(ph->is_dead);
 	}
 	sem_post(ph->speak);
 }
@@ -54,18 +56,27 @@ int	phi_is_dead(t_ph *ph)
 {
 	int	res;
 
-	res = 0;
-	sem_wait(ph->dead);
-	if (ph->is_dead == 1)
-		res = 1;
-	sem_post(ph->dead);
-	return (res);
+	sem_wait(ph->is_dead);
+	res = sem_wait(ph->dead);
+	if (res == -1)
+	{
+		sem_post(ph->is_dead);
+		return (1);
+	}
+	else
+	{
+		sem_post(ph->dead);
+		sem_post(ph->is_dead);
+		return (0);
+	}
+	
 }
 
 void	free_ph(t_ph *ph)
 {
 	sem_close(ph->id);
 	sem_close(ph->dead);
+	sem_close(ph->is_dead);
 	sem_close(ph->speak);
 	sem_close(ph->fork);
 	sem_close(ph->check);

@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/03 13:44:52 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/18 14:29:07 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/20 12:40:57 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,12 +55,10 @@ void	phi_eat(t_ph *ph, t_philo *philo)
 	philo->state = SLEEPING;
 }
 
-void	*start_routine(void *p)
+int		start_routine(t_ph *ph)
 {
-	t_ph	*ph;
 	t_philo	philo;
 
-	ph = p;
 	philo = init_philo(ph);
 	while (!phi_is_dead(ph) && (ph->must_eat == -1
 			|| philo.nb_eat < ph->must_eat))
@@ -76,45 +74,49 @@ void	*start_routine(void *p)
 		else
 			phi_sleep(ph, &philo);
 	}
-	return (NULL);
+	if ((ph->must_eat != -1 && philo.nb_eat >= ph->must_eat))
+		return (0);
+	return (1);
 }
 
 void	philosophers(t_ph *ph)
 {
 	int				i;
-	pthread_t		*thread_id;
+	pid_t			*pid;
+	pid_t			current_pid;
 	struct timeval	temp;
+	int				status;
 
 	i = 0;
 	gettimeofday(&temp, NULL);
 	ph->time = ft_time(&temp);
+	pid = malloc(sizeof(pid_t) * ph->nb);
+	status = 0;
+	if (!pid)
+		return ;
 	while (i < ph->nb)
 	{
 		sem_wait(ph->id);
 		ph->current = i;
-		id_t	pid;
-		int		*status;
-		if ((pid = fork()) == -1)
+		current_pid = fork();
+		if (current_pid == -1)
 			exit(1);
-		else if (pid == 0)
+		else if (current_pid == 0)
 		{
-			start_routine();
-			exit(0);
-		}
-		else
-		{
-			waitpid(-1, status, 0);
-			kill(0, SIGKILL);
+			pid[i] = current_pid;
+			exit(start_routine(ph));
 		}
 		++i;
 	}
 	i = 0;
 	while (i < ph->nb)
 	{
-		pthread_join(thread_id[i], NULL);
+		waitpid(0, &status, 0);
 		++i;
+		if (status != 0)
+			break;
 	}
-	free(thread_id);
+	free(pid);
 }
 
 int	main(int argc, char **argv)
