@@ -6,35 +6,21 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/03 13:44:52 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/20 12:40:57 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/21 12:12:17 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philosophers.h"
 
-void	phi_sleep(t_ph *ph, t_philo *philo)
-{
-	print_state(ph, philo->id, SLEEPING);
-	if (ph->t_die < ft_have_time(&(philo->last_eat), ph->t_eat))
-	{
-		phi_my_sleep(ph->t_die - ft_timersub(&(philo->last_eat)));
-		print_state(ph, philo->id, DIED);
-	}
-	else
-	{
-		phi_my_sleep(ph->t_sleep);
-		print_state(ph, philo->id, THINKING);
-		philo->state = EATING;
-	}
-}
-
 void	phi_eat(t_ph *ph, t_philo *philo)
 {
 	sem_wait(ph->check);
+	dprintf(1,"dead: %p\n",ph->dead);
 	if (ph->nb_fork - 2 >= 0)
-		ph->nb_fork -= 2;
+		ph->nb_fork = ph->nb_fork - 2;
 	else
 	{
+		
 		sem_post(ph->check);
 		return ;
 	}
@@ -55,7 +41,7 @@ void	phi_eat(t_ph *ph, t_philo *philo)
 	philo->state = SLEEPING;
 }
 
-int		start_routine(t_ph *ph)
+int	start_routine(t_ph *ph)
 {
 	t_philo	philo;
 
@@ -79,22 +65,16 @@ int		start_routine(t_ph *ph)
 	return (1);
 }
 
-void	philosophers(t_ph *ph)
+void	philosophers(t_ph *ph, int status)
 {
 	int				i;
-	pid_t			*pid;
 	pid_t			current_pid;
 	struct timeval	temp;
-	int				status;
 
-	i = 0;
+	i = -1;
 	gettimeofday(&temp, NULL);
 	ph->time = ft_time(&temp);
-	pid = malloc(sizeof(pid_t) * ph->nb);
-	status = 0;
-	if (!pid)
-		return ;
-	while (i < ph->nb)
+	while (++i < ph->nb)
 	{
 		sem_wait(ph->id);
 		ph->current = i;
@@ -102,30 +82,27 @@ void	philosophers(t_ph *ph)
 		if (current_pid == -1)
 			exit(1);
 		else if (current_pid == 0)
-		{
-			pid[i] = current_pid;
 			exit(start_routine(ph));
-		}
-		++i;
 	}
-	i = 0;
-	while (i < ph->nb)
+	i = -1;
+	while (++i < ph->nb)
 	{
 		waitpid(0, &status, 0);
-		++i;
 		if (status != 0)
-			break;
+			break ;
 	}
-	free(pid);
+	
 }
 
 int	main(int argc, char **argv)
 {
 	t_ph	ph;
+	int		status;
 
+	status = 0;
 	if (init_ph(&ph, argc, argv))
 	{
-		philosophers(&ph);
+		philosophers(&ph, status);
 		free_ph(&ph);
 	}
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/24 08:32:42 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/20 10:43:28 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/21 12:17:56 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ int	init_sem(t_ph *ph)
 	sem_unlink("/speak");
 	sem_unlink("/id");
 	sem_unlink("/fork");
+	sem_unlink("/nb_fork");
 	sem_unlink("/check");
 	ph->dead = sem_open("/dead", O_CREAT | O_EXCL, S_IRWXU, 1);
 	ph->is_dead = sem_open("/is_dead", O_CREAT | O_EXCL, S_IRWXU, 1);

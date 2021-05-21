@@ -6,11 +6,27 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/24 08:35:30 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/20 11:07:44 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/21 09:43:59 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philosophers.h"
+
+void	phi_sleep(t_ph *ph, t_philo *philo)
+{
+	print_state(ph, philo->id, SLEEPING);
+	if (ph->t_die < ft_have_time(&(philo->last_eat), ph->t_eat))
+	{
+		phi_my_sleep(ph->t_die - ft_timersub(&(philo->last_eat)));
+		print_state(ph, philo->id, DIED);
+	}
+	else
+	{
+		phi_my_sleep(ph->t_sleep);
+		print_state(ph, philo->id, THINKING);
+		philo->state = EATING;
+	}
+}
 
 void	print_state(t_ph *ph, int id, int state)
 {
@@ -69,7 +85,6 @@ int	phi_is_dead(t_ph *ph)
 		sem_post(ph->is_dead);
 		return (0);
 	}
-	
 }
 
 void	free_ph(t_ph *ph)

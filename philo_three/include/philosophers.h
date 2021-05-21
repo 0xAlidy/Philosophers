@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/30 17:45:44 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/20 10:42:44 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/21 12:08:05 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ typedef struct s_ph
 	int				t_die;
 	int				must_eat;
 	int				current;
-	int 			nb_fork;
+	sem_t			nb_fork;
 	sem_t			*fork;
 	sem_t			*speak;
 	sem_t			*is_dead;
