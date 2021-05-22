@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/24 08:24:20 by alidy             #+#    #+#             */
-/*   Updated: 2021/02/24 09:01:48 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/22 14:14:34 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ long	ft_have_time(struct timeval *s, int time)
 	return (ft_timersub(s) + time);
 }
 
-void	phi_my_sleep(int time)
+void	phi_my_sleep(t_ph *ph, int time)
 {
 	int				i;
 	struct timeval	start;
@@ -54,6 +54,8 @@ void	phi_my_sleep(int time)
 	while (i == 1)
 	{
 		usleep(10);
+		if (phi_is_dead(ph))
+			return ;
 		if (ft_timersub(&start) >= time)
 			i = 0;
 	}

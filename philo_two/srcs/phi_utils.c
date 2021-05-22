@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/24 08:35:30 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/18 09:49:18 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/22 14:14:51 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ t_philo	init_philo(t_ph *ph)
 	philo.state = EATING;
 	gettimeofday(&(philo.last_eat), NULL);
 	if (ph->nb == 1)
-		phi_my_sleep(ph->t_die + 1);
+		phi_my_sleep(ph, ph->t_die + 1);
 	return (philo);
 }
 

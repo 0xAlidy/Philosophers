@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/24 08:35:30 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/21 09:43:59 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/22 14:49:51 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,14 @@
 void	phi_sleep(t_ph *ph, t_philo *philo)
 {
 	print_state(ph, philo->id, SLEEPING);
-	if (ph->t_die < ft_have_time(&(philo->last_eat), ph->t_eat))
+	if (ph->t_die < ft_have_time(&(philo->last_eat), ph->t_sleep))
 	{
-		phi_my_sleep(ph->t_die - ft_timersub(&(philo->last_eat)));
+		phi_my_sleep(ph, ph->t_die - ft_timersub(&(philo->last_eat)));
 		print_state(ph, philo->id, DIED);
 	}
 	else
 	{
-		phi_my_sleep(ph->t_sleep);
+		phi_my_sleep(ph, ph->t_sleep);
 		print_state(ph, philo->id, THINKING);
 		philo->state = EATING;
 	}
@@ -64,7 +64,7 @@ t_philo	init_philo(t_ph *ph)
 	philo.state = EATING;
 	gettimeofday(&(philo.last_eat), NULL);
 	if (ph->nb == 1)
-		phi_my_sleep(ph->t_die + 1);
+		phi_my_sleep(ph, ph->t_die + 1);
 	return (philo);
 }
 

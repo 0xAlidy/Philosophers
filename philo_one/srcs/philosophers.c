@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/03 13:44:52 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/12 14:08:43 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/22 13:54:57 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,14 @@
 void	phi_sleep(t_ph *ph, t_philo *philo)
 {
 	print_state(ph, philo->id, SLEEPING);
-	if (ph->t_die < ft_have_time(&(philo->last_eat), ph->t_eat))
+	if (ph->t_die < ft_have_time(&(philo->last_eat), ph->t_sleep))
 	{
-		phi_my_sleep(ph->t_die - ft_timersub(&(philo->last_eat)));
+		phi_my_sleep(ph, ph->t_die - ft_timersub(&(philo->last_eat)));
 		print_state(ph, philo->id, DIED);
 	}
 	else
 	{
-		phi_my_sleep(ph->t_sleep);
+		phi_my_sleep(ph, ph->t_sleep);
 		print_state(ph, philo->id, THINKING);
 		philo->state = EATING;
 	}
@@ -42,7 +42,7 @@ void	phi_eat(t_ph *ph, t_philo *philo)
 		philo->nb_eat += 1;
 		print_state(ph, philo->id, EATING);
 		gettimeofday(&(philo->last_eat), NULL);
-		phi_my_sleep(ph->t_eat);
+		phi_my_sleep(ph, ph->t_eat);
 		philo->state = SLEEPING;
 		pthread_mutex_lock(&(ph->m_fork));
 		ph->forks[philo->id - 1] = 0;
@@ -64,7 +64,7 @@ void	*start_routine(void *p)
 		usleep(10);
 		if (ph->t_die < ft_timersub(&(philo.last_eat)))
 		{
-			phi_my_sleep(ph->t_die - ft_timersub(&(philo.last_eat)));
+			phi_my_sleep(ph, ph->t_die - ft_timersub(&(philo.last_eat)));
 			print_state(ph, philo.id, DIED);
 		}
 		else if (philo.state == EATING)

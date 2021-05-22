@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/30 17:45:44 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/21 10:48:35 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/22 14:15:07 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ long				ft_have_time(struct timeval *s, int time);
 int					phi_is_dead(t_ph *ph);
 void				print_state(t_ph *ph, int id, int state);
 t_philo				init_philo(t_ph *ph);
-void				phi_my_sleep(int time);
+void				phi_my_sleep(t_ph *ph, int time);
 void				phi_sleep(t_ph	*ph, t_philo *philo);
 
 #endif
