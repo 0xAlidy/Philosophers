@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/24 08:35:30 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/22 14:49:51 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/22 18:12:32 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,9 @@
 void	phi_sleep(t_ph *ph, t_philo *philo)
 {
 	print_state(ph, philo->id, SLEEPING);
-	if (ph->t_die < ft_have_time(&(philo->last_eat), ph->t_sleep))
-	{
-		phi_my_sleep(ph, ph->t_die - ft_timersub(&(philo->last_eat)));
-		print_state(ph, philo->id, DIED);
-	}
-	else
-	{
-		phi_my_sleep(ph, ph->t_sleep);
-		print_state(ph, philo->id, THINKING);
-		philo->state = EATING;
-	}
+	phi_my_sleep(ph, ph->t_sleep);
+	print_state(ph, philo->id, THINKING);
+	philo->state = EATING;
 }
 
 void	print_state(t_ph *ph, int id, int state)
@@ -44,13 +36,6 @@ void	print_state(t_ph *ph, int id, int state)
 		printf("%-5ld %d is thinking\n", ft_timer(ph->time), id);
 	else if (state == FORK)
 		printf("%-5ld %d has taken a fork\n", ft_timer(ph->time), id);
-	else if (state == DIED)
-	{
-		printf("%-5ld %d died\n", ft_timer(ph->time), id);
-		sem_wait(ph->is_dead);
-		*(ph->dead) = -1;
-		sem_post(ph->is_dead);
-	}
 	sem_post(ph->speak);
 }
 
@@ -61,6 +46,10 @@ t_philo	init_philo(t_ph *ph)
 	philo.id = ph->current + 1;
 	sem_post(ph->id);
 	philo.nb_eat = 0;
+	philo.t_die = ph->t_die;
+	philo.is_dead = &ph->is_dead;
+	philo.dead = &ph->dead;
+	philo.time = &ph->time;
 	philo.state = EATING;
 	gettimeofday(&(philo.last_eat), NULL);
 	if (ph->nb == 1)

@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/03 13:44:52 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/22 16:45:34 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/22 18:20:52 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,51 +14,53 @@
 
 void	phi_eat(t_ph *ph, t_philo *philo)
 {
-	sem_wait(ph->check);
-	dprintf(1, "fork: %d\n",(int)ph->fork);
-	if ((int)ph->fork - 2 >= 0)
+	sem_wait(ph->fork);
+	sem_wait(ph->fork);
+	print_state(ph, philo->id, FORK);
+	print_state(ph, philo->id, FORK);
+	print_state(ph, philo->id, EATING);
+	gettimeofday(&(philo->last_eat), NULL);
+	phi_my_sleep(ph, ph->t_eat);
+	sem_post(ph->fork);
+	sem_post(ph->fork);
+	philo->nb_eat += 1;
+	philo->state = SLEEPING;
+}
+
+void *check_die(void *philo)
+{
+	t_philo	*p;
+
+	p = philo;
+	while (1)
 	{
-		sem_wait(ph->fork);
-		sem_wait(ph->fork);
-		//ph->nb_fork = ph->fork - 2;
-		dprintf(1, "fork: %p\n", ph->fork--);
-		sem_post(ph->check);
-		print_state(ph, philo->id, FORK);
-		print_state(ph, philo->id, FORK);
-		print_state(ph, philo->id, EATING);
-		gettimeofday(&(philo->last_eat), NULL);
-		phi_my_sleep(ph, ph->t_eat);
-		sem_post(ph->fork);
-		sem_post(ph->fork);
-		sem_wait(ph->check);
-		ph->nb_fork += 2;
-		sem_post(ph->check);
-		philo->nb_eat += 1;
-		philo->state = SLEEPING;
+		if (p->t_die < ft_timersub(&(p->last_eat)))
+		{
+			//ajouter semaphore pour parler
+			//printf("%-5ld %d died\n", ft_timer(*(p->time)), p->id);
+			sem_wait(*(p->is_dead));
+			*((*p->dead)) = -1;
+			sem_post(*(p->is_dead));
+			exit(1);
+		}
+		usleep(10);
 	}
-	else
-	{
-		sem_post(ph->check);
-		return ;
-	}
+	return (0);
 }
 
 int	start_routine(t_ph *ph)
 {
-	t_philo	philo;
+	t_philo		philo;
+	pthread_t	thread;
 
 	philo = init_philo(ph);
-	while (!phi_is_dead(ph) && (ph->must_eat == -1
-			|| philo.nb_eat < ph->must_eat))
+	if (pthread_create(&thread, NULL, check_die, &philo))
+		return (1);
+	pthread_detach(thread);
+	while (ph->must_eat == -1 || philo.nb_eat < ph->must_eat)
 	{
 		usleep(10);
-		
-		if (ph->t_die < ft_timersub(&(philo.last_eat)))
-		{
-			phi_my_sleep(ph, ph->t_die - ft_timersub(&(philo.last_eat)));
-			print_state(ph, philo.id, DIED);
-		}
-		else if (philo.state == EATING)
+		if (philo.state == EATING)
 			phi_eat(ph, &philo);
 		else
 			phi_sleep(ph, &philo);
@@ -97,16 +99,22 @@ void	philosophers(t_ph *ph, int status)
 	i = -1;
 	while (++i < ph->nb)
 	{
+		
 		waitpid(-1, &status, 0);
-		dprintf(1,"exit\n");
+		dprintf(1,"ok\n");
 		if (status != 0)
 			break ;
 	}
-	
 	i = -1;
 	while (++i < ph->nb)
+	{
+		
 		if (pid[i] != 0)
+		{
+			dprintf(1,"kill\n");
 			kill(pid[i], SIGTERM);
+		}
+	}
 	free(pid);
 }
 

@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/30 17:45:44 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/22 16:30:54 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/22 18:11:19 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,11 @@ typedef struct s_philo
 	int				id;
 	int				nb_eat;
 	int				state;
+	int				t_die;
 	struct timeval	last_eat;
+	sem_t			**is_dead;
+	sem_t			**dead;
+	long			*time;
 }					t_philo;
 
 typedef struct s_ph

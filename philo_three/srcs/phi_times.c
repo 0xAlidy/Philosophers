@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/24 08:24:20 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/22 14:45:56 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/22 17:26:45 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,12 +50,11 @@ void	phi_my_sleep(t_ph *ph, int time)
 	struct timeval	start;
 
 	i = 1;
+	(void)ph;
 	gettimeofday(&start, NULL);
 	while (i == 1)
 	{
 		usleep(10);
-		if (phi_is_dead(ph))
-			return ;
 		if (ft_timersub(&start) >= time)
 			i = 0;
 	}
