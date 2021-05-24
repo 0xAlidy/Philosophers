@@ -12,7 +12,7 @@ leaks -atExit -- ./philo_one 4 410 200 200
 leaks -atExit -- ./philo_one 4 410 200 000
 leaks -atExit -- ./philo_one 4 310 200 100
 leaks -atExit -- ./philo_one 4 399 200 200 10
-leaks -atExit -- ./philo_one 4 400 200 200 10
+leaks -atExit -- ./philo_one 4 410 200 200 10
 leaks -atExit -- ./philo_one 4 310 200 200 10
 leaks -atExit -- ./philo_one 4 310 200 100 2
 leaks -atExit -- ./philo_one 4 310 200 100 1
@@ -35,7 +35,7 @@ leaks --atExit -- ./philo_two 4 410 200 200
 leaks --atExit -- ./philo_two 4 410 200 000
 leaks --atExit -- ./philo_two 4 310 200 100
 leaks --atExit -- ./philo_two 4 399 200 200 10
-leaks --atExit -- ./philo_two 4 400 200 200 10
+leaks --atExit -- ./philo_two 4 410 200 200 10
 leaks --atExit -- ./philo_two 4 310 200 200 10
 leaks --atExit -- ./philo_two 4 310 200 100 2
 leaks --atExit -- ./philo_two 4 310 200 100 1
@@ -58,7 +58,7 @@ leaks --atExit -- ./philo_three 4 410 200 200
 leaks --atExit -- ./philo_three 4 410 200 000
 leaks --atExit -- ./philo_three 4 310 200 100
 leaks --atExit -- ./philo_three 4 399 200 200 10
-leaks --atExit -- ./philo_three 4 400 200 200 10
+leaks --atExit -- ./philo_three 4 410 200 200 10
 leaks --atExit -- ./philo_three 4 310 200 200 10
 leaks --atExit -- ./philo_three 4 310 200 100 2
 leaks --atExit -- ./philo_three 4 310 200 100 1
