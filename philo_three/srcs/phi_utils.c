@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/24 08:35:30 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/22 18:12:32 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/24 14:53:41 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,7 @@ void	phi_sleep(t_ph *ph, t_philo *philo)
 void	print_state(t_ph *ph, int id, int state)
 {
 	sem_wait(ph->speak);
-	if (phi_is_dead(ph) == 1)
-	{
-		sem_post(ph->speak);
-		return ;
-	}
+	phi_is_dead(ph);
 	if (state == EATING)
 		printf("%-5ld %d is eating\n", ft_timer(ph->time), id);
 	else if (state == SLEEPING)
@@ -36,6 +32,11 @@ void	print_state(t_ph *ph, int id, int state)
 		printf("%-5ld %d is thinking\n", ft_timer(ph->time), id);
 	else if (state == FORK)
 		printf("%-5ld %d has taken a fork\n", ft_timer(ph->time), id);
+	else if (state == DIED)
+	{
+		sem_wait(ph->is_dead);
+		printf("%-5ld %d died\n", ft_timer(ph->time), id);
+	}
 	sem_post(ph->speak);
 }
 
@@ -46,10 +47,6 @@ t_philo	init_philo(t_ph *ph)
 	philo.id = ph->current + 1;
 	sem_post(ph->id);
 	philo.nb_eat = 0;
-	philo.t_die = ph->t_die;
-	philo.is_dead = &ph->is_dead;
-	philo.dead = &ph->dead;
-	philo.time = &ph->time;
 	philo.state = EATING;
 	gettimeofday(&(philo.last_eat), NULL);
 	if (ph->nb == 1)
@@ -57,31 +54,16 @@ t_philo	init_philo(t_ph *ph)
 	return (philo);
 }
 
-int	phi_is_dead(t_ph *ph)
+void	phi_is_dead(t_ph *ph)
 {
-	int	res;
-
 	sem_wait(ph->is_dead);
-	res = sem_wait(ph->dead);
-	if (res == -1)
-	{
-		sem_post(ph->is_dead);
-		return (1);
-	}
-	else
-	{
-		sem_post(ph->dead);
-		sem_post(ph->is_dead);
-		return (0);
-	}
+	sem_post(ph->is_dead);
 }
 
 void	free_ph(t_ph *ph)
 {
 	sem_close(ph->id);
-	sem_close(ph->dead);
 	sem_close(ph->is_dead);
 	sem_close(ph->speak);
 	sem_close(ph->fork);
-	sem_close(ph->check);
 }

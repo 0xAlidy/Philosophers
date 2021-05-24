@@ -6,7 +6,7 @@
 /*   By: alidy <alidy@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/03 13:44:52 by alidy             #+#    #+#             */
-/*   Updated: 2021/05/22 18:20:52 by alidy            ###   ########lyon.fr   */
+/*   Updated: 2021/05/24 14:44:34 by alidy            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,20 +27,20 @@ void	phi_eat(t_ph *ph, t_philo *philo)
 	philo->state = SLEEPING;
 }
 
-void *check_die(void *philo)
+void	*check_die(void *philo)
 {
 	t_philo	*p;
+	t_ph	*ph;
+	t_save	*save;
 
-	p = philo;
+	save = philo;
+	p = save->p;
+	ph = save->ph;
 	while (1)
 	{
-		if (p->t_die < ft_timersub(&(p->last_eat)))
+		if (ph->t_die < ft_timersub(&(p->last_eat)))
 		{
-			//ajouter semaphore pour parler
-			//printf("%-5ld %d died\n", ft_timer(*(p->time)), p->id);
-			sem_wait(*(p->is_dead));
-			*((*p->dead)) = -1;
-			sem_post(*(p->is_dead));
+			print_state(ph, p->id, DIED);
 			exit(1);
 		}
 		usleep(10);
@@ -52,9 +52,12 @@ int	start_routine(t_ph *ph)
 {
 	t_philo		philo;
 	pthread_t	thread;
+	t_save		save;
 
+	save.p = &philo;
+	save.ph = ph;
 	philo = init_philo(ph);
-	if (pthread_create(&thread, NULL, check_die, &philo))
+	if (pthread_create(&thread, NULL, check_die, &save))
 		return (1);
 	pthread_detach(thread);
 	while (ph->must_eat == -1 || philo.nb_eat < ph->must_eat)
@@ -66,11 +69,11 @@ int	start_routine(t_ph *ph)
 			phi_sleep(ph, &philo);
 	}
 	if (ph->must_eat != -1 && philo.nb_eat == ph->must_eat)
-		return (0);
+		exit(0);
 	return (1);
 }
 
-void	philosophers(t_ph *ph, int status)
+void	philosophers(t_ph *ph)
 {
 	int				i;
 	pid_t			current_pid;
@@ -88,45 +91,22 @@ void	philosophers(t_ph *ph, int status)
 		sem_wait(ph->id);
 		ph->current = i;
 		current_pid = fork();
+		pid[i] = current_pid;
 		if (current_pid == -1)
 			exit(1);
 		else if (current_pid == 0)
-		{
-			pid[i] = current_pid;
 			exit(start_routine(ph));
-		}
 	}
-	i = -1;
-	while (++i < ph->nb)
-	{
-		
-		waitpid(-1, &status, 0);
-		dprintf(1,"ok\n");
-		if (status != 0)
-			break ;
-	}
-	i = -1;
-	while (++i < ph->nb)
-	{
-		
-		if (pid[i] != 0)
-		{
-			dprintf(1,"kill\n");
-			kill(pid[i], SIGTERM);
-		}
-	}
-	free(pid);
+	philo_end(ph, pid);
 }
 
 int	main(int argc, char **argv)
 {
 	t_ph	ph;
-	int		status;
 
-	status = 0;
 	if (init_ph(&ph, argc, argv))
 	{
-		philosophers(&ph, status);
+		philosophers(&ph);
 		free_ph(&ph);
 	}
 	return (0);
